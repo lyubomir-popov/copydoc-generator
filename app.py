@@ -5,6 +5,7 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from flask import Flask, render_template, request
+import datetime
 
 app = Flask(
     __name__,
@@ -26,9 +27,8 @@ def index():
 
 # @app.route("/drive", methods=["POST"])
 @app.route("/drive", methods=["POST"])
-def upload_to_drive():
+def append_text():
     body = request.get_json()
-    print(body.get('amount'))
 
     creds = None
     if os.path.exists('token.pickle'):
@@ -58,16 +58,27 @@ def upload_to_drive():
     # doc = service.documents().create(body=body).execute()
     doc = service.documents().get(documentId=DOCUMENT_ID).execute()
     # add text
+    # print(body.get('heading'))
+    heading = body.get('heading')
+    date = datetime.datetime.now().strftime("%y/%m/%d")
     requests = [
-         {
-            'insertText': {
-                'location': {
-                    'index': 1,
-                },
-                'text': 'Title added from flask app '
+            {
+                'replaceAllText': {
+                    'containsText': {
+                        'text': '{{title}}',
+                        'matchCase':  'true'
+                    },
+                    'replaceText': heading,
+                }}, {
+                'replaceAllText': {
+                    'containsText': {
+                        'text': '{{date}}',
+                        'matchCase':  'true'
+                    },
+                    'replaceText': str(date),
+                }
             }
-        }
-    ]
+        ]
 
     result = service.documents().batchUpdate(documentId=DOCUMENT_ID, body={'requests': requests}).execute()
     print('String appended to {0}'.format(doc.get('title')))
