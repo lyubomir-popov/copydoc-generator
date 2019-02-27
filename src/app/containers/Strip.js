@@ -1,44 +1,31 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 
-import strips from "../strips";
+import { stripTypes, stripExamples } from "../data";
 import StripTypeSelect from "../components/StripTypeSelect";
 
 class Strip extends Component {
   state = {
-    selectedType: undefined,
-    selectedSubtype: undefined,
     border: false
   };
 
-  static getDerivedStateFromProps = (props, state) => {
-    if (props.type !== state.selectedType) {
-      if (props.subtype !== state.selectedSubtype) {
-        return { selectedType: props.type, selectedSubtype: props.subtype };
-      }
-      return { selectedType: props.type };
-    }
-    return null;
+  selectStrip = e => {
+    const { strip, changeType } = this.props;
+    changeType(strip.id, e.target.value);
   };
 
-  selectType = e => {
-    const { id, changeType } = this.props;
-    changeType(id, e.target.value);
-    this.setState({ selectedType: e.target.value });
-  };
-
-  selectSubtype = e => {
-    const { id, changeSubtype } = this.props;
-    changeSubtype(id, e.target.value);
-    this.setState({ selectedSubtype: e.target.value });
+  selectName = e => {
+    const { strip, changeName } = this.props;
+    changeName(strip.id, e.target.value);
   };
 
   getStripJSX = () => {
-    const { type, subtype } = this.props;
-    const stripType = strips.find(item => item.type === type);
-    const stripSubType = stripType.subtypes.find(item => item.name === subtype);
+    const { strip } = this.props;
+    const example = stripExamples.find(
+      item => item.type === strip.type && item.name === strip.name
+    );
 
-    return stripSubType.jsx;
+    return example.jsx;
   };
 
   toggleBorder = () => {
@@ -47,17 +34,14 @@ class Strip extends Component {
   };
 
   render = () => {
-    const { selectedType, selectedSubtype, border } = this.state;
-    const {
-      id,
-      move,
-      remove,
-      canMoveUp,
-      canMoveDown,
-      type,
-      editing
-    } = this.props;
-    const stripType = strips.find(item => item.type === type);
+    const { border } = this.state;
+    const { strip, move, remove, canMoveUp, canMoveDown, editing } = this.props;
+    const stripNames = stripExamples.reduce((acc, example) => {
+      if (example.type === strip.type) {
+        acc.push(example.name);
+      }
+      return acc;
+    }, []);
 
     return (
       <section className="strip-container">
@@ -67,20 +51,20 @@ class Strip extends Component {
         {editing && (
           <div className="strip-controls">
             <StripTypeSelect
-              selected={selectedType}
-              options={strips.map(strip => ({
-                name: strip.name,
-                value: strip.type
+              selected={strip.type}
+              options={stripTypes.map(type => ({
+                name: type.label,
+                value: type.name
               }))}
-              onChange={this.selectType}
+              onChange={this.selectStrip}
             />
             <StripTypeSelect
-              selected={selectedSubtype}
-              options={stripType.subtypes.map(subtype => ({
-                name: subtype.name,
-                value: subtype.name
+              selected={strip.name}
+              options={stripNames.map(name => ({
+                name,
+                value: name
               }))}
-              onChange={this.selectSubtype}
+              onChange={this.selectName}
             />
             <div>
               <label className="p-checkbox">
@@ -98,7 +82,7 @@ class Strip extends Component {
               <button
                 type="button"
                 className="p-button--base remove-button u-no-margin"
-                onClick={() => remove(id)}
+                onClick={() => remove(strip.id)}
               >
                 <i className="p-icon--close" />
               </button>
@@ -108,7 +92,7 @@ class Strip extends Component {
                     <button
                       type="button"
                       className="p-button--base move-up-button u-no-margin"
-                      onClick={() => move(id, "up")}
+                      onClick={() => move(strip.id, "up")}
                     >
                       <i className="p-icon--chevron u-mirror--y" />
                     </button>
@@ -117,7 +101,7 @@ class Strip extends Component {
                     <button
                       type="button"
                       className="p-button--base move-down-button u-no-margin"
-                      onClick={() => move(id, "down")}
+                      onClick={() => move(strip.id, "down")}
                     >
                       <i className="p-icon--chevron" />
                     </button>
@@ -133,15 +117,17 @@ class Strip extends Component {
 }
 
 Strip.propTypes = {
+  strip: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired
+  }).isRequired,
   canMoveDown: PropTypes.bool.isRequired,
   canMoveUp: PropTypes.bool.isRequired,
-  id: PropTypes.string.isRequired,
   move: PropTypes.func,
   remove: PropTypes.func.isRequired,
-  type: PropTypes.string.isRequired,
-  subtype: PropTypes.string.isRequired,
   changeType: PropTypes.func.isRequired,
-  changeSubtype: PropTypes.func.isRequired,
+  changeName: PropTypes.func.isRequired,
   editing: PropTypes.bool.isRequired
 };
 

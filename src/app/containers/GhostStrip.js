@@ -1,14 +1,16 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 
-import strips from "../strips";
+import { stripTypes, stripExamples } from "../data";
 
 class GhostStrip extends Component {
   handleSelect = e => {
     const { addStrip } = this.props;
-    const strip = strips.find(strip => strip.type === e.target.value);
+    const strip = stripExamples.find(
+      example => example.type === e.target.value
+    );
 
-    addStrip(strip.type, strip.subtypes[0].name);
+    addStrip(strip);
   };
 
   render = () => {
@@ -20,9 +22,9 @@ class GhostStrip extends Component {
             <option value="" disabled>
               Add a new strip
             </option>
-            {strips.map(option => (
-              <option key={option.type} value={option.type}>
-                {option.name}
+            {stripTypes.map(option => (
+              <option key={option.name} value={option.name}>
+                {option.label}
               </option>
             ))}
           </select>

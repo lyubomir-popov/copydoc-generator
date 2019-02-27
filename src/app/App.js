@@ -6,7 +6,7 @@ import Strip from "./containers/Strip";
 import Nav from "./components/Nav";
 import GhostStrip from "./containers/GhostStrip";
 import Footer from "./components/Footer";
-import stripsData from "./strips";
+import { stripExamples } from "./data";
 
 const moveItem = (origArr, fromIndex, toIndex) => {
   const arr = [...origArr];
@@ -25,12 +25,11 @@ class App extends Component {
 
   container = React.createRef();
 
-  addStrip = (type, subtype) => {
+  addStrip = strip => {
     const { strips } = this.state;
     const newStrip = {
       id: uuidv4(),
-      type,
-      subtype
+      ...strip
     };
     this.setState({ strips: [...strips, newStrip] });
   };
@@ -57,7 +56,7 @@ class App extends Component {
         return {
           ...strip,
           type,
-          subtype: stripsData.find(item => item.type === type).subtypes[0].name
+          name: stripExamples.find(strip => strip.type === type).name
         };
       }
       return strip;
@@ -66,13 +65,13 @@ class App extends Component {
     this.setState({ strips: newStrips });
   };
 
-  changeStripSubtype = (id, subtype) => {
+  changeStripName = (id, name) => {
     const { strips } = this.state;
     const newStrips = strips.map(strip => {
       if (strip.id === id) {
         return {
           ...strip,
-          subtype
+          name
         };
       }
       return strip;
@@ -91,15 +90,12 @@ class App extends Component {
 
     return strips.map((strip, index) => (
       <Strip
-        editing={editing}
         key={strip.id}
-        id={strip.id}
-        type={strip.type}
-        name={strip.name}
-        subtype={strip.subtype}
+        strip={strip}
+        editing={editing}
         remove={this.removeStrip}
         changeType={this.changeStripType}
-        changeSubtype={this.changeStripSubtype}
+        changeName={this.changeStripName}
         move={strips.length >= 2 ? this.moveStrip : undefined}
         canMoveUp={index !== 0}
         canMoveDown={index !== strips.length - 1}
