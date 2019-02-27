@@ -6,8 +6,40 @@ const stripTypes = [
     label: "Hero"
   },
   {
-    name: "card",
-    label: "Card"
+    name: "proposition",
+    label: "Proposition"
+  },
+  {
+    name: "key-features",
+    label: "Key features"
+  },
+  {
+    name: "detail",
+    label: "Detail"
+  },
+  {
+    name: "embed",
+    label: "Embed"
+  },
+  {
+    name: "comparison",
+    label: "Comparison"
+  },
+  {
+    name: "credibility",
+    label: "Credibility"
+  },
+  {
+    name: "links",
+    label: "Links"
+  },
+  {
+    name: "instructions",
+    label: "Instructions"
+  },
+  {
+    name: "tail",
+    label: "Tail"
   }
 ];
 
@@ -47,7 +79,7 @@ const stripExamples = [
     )
   },
   {
-    type: "card",
+    type: "key-features",
     name: "Two cards",
     jsx: (
       <div className="row">
@@ -69,7 +101,7 @@ const stripExamples = [
     )
   },
   {
-    type: "card",
+    type: "key-features",
     name: "Three cards",
     jsx: (
       <div className="row">

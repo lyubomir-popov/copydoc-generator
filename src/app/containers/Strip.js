@@ -11,7 +11,13 @@ class Strip extends Component {
 
   selectStrip = e => {
     const { strip, changeType } = this.props;
-    changeType(strip.id, e.target.value);
+    const stripExists = stripExamples.find(
+      example => example.type === e.target.value
+    );
+
+    if (stripExists) {
+      changeType(strip.id, e.target.value);
+    }
   };
 
   selectName = e => {

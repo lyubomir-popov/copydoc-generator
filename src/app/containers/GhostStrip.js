@@ -10,7 +10,9 @@ class GhostStrip extends Component {
       example => example.type === e.target.value
     );
 
-    addStrip(strip);
+    if (strip) {
+      addStrip(strip);
+    }
   };
 
   render = () => {
