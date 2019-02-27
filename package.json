@@ -38,7 +38,7 @@
     "jest-watch-typeahead": "^0.2.1",
     "lint-staged": "^8.1.4",
     "mini-css-extract-plugin": "0.5.0",
-    "node-sass": "^4.11.0",
+    "node-sass": "^4.5.3",
     "optimize-css-assets-webpack-plugin": "5.0.1",
     "pnp-webpack-plugin": "1.2.1",
     "postcss-flexbugs-fixes": "4.1.0",
@@ -61,12 +61,20 @@
     "webpack": "4.28.3",
     "webpack-dev-server": "3.1.14",
     "webpack-manifest-plugin": "2.0.4",
-    "workbox-webpack-plugin": "3.6.3"
+    "workbox-webpack-plugin": "3.6.3",
+    "watch-cli": "^0.2.2",
+    "sass-lint": "^1.10.2",
+    "postcss-cli": "^4.1.0",
+    "cssnano": "^3.10.0",
+    "autoprefixer": "^6.3.1"
   },
   "scripts": {
+    "serve": "./entrypoint 0.0.0.0:${PORT}",
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
-    "test": "node scripts/test.js"
+    "test": "node scripts/test.js",
+    "watch": "watch -p 'static/sass/**/*.scss' -c 'yarn run build'",
+    "clean": "rm -rf node_modules yarn-error.log css static/css *.log *.sqlite _site/ build/ .jekyll-metadata .bundle"
   },
   "eslintConfig": {
     "extends": "react-app"
