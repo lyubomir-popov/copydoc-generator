@@ -30,7 +30,6 @@ def upload_to_drive():
     body = request.get_json()
     print(body.get('amount'))
 
-    return "Ola"
     creds = None
     if os.path.exists('token.pickle'):
         with open('token.pickle', 'rb') as token:
@@ -47,19 +46,17 @@ def upload_to_drive():
         with open('token.pickle', 'wb') as token:
             pickle.dump(creds, token)
 
-    service = build('docs', 'v1', credentials=creds)
+    service = build('docs', 'v1', credentials=creds, cache_discovery=False)
+
 
     # create doc
 
-    title = 'My Document'
-    body = {
-        'title': title
-    }
+    # title = 'My Document'
+    # body = {
+    #     'title': title
+    # }
     # doc = service.documents().create(body=body).execute()
     doc = service.documents().get(documentId=DOCUMENT_ID).execute()
-    print('Created document with title: {0}'.format(
-        doc.get('title')))
-
     # add text
     requests = [
          {
@@ -67,10 +64,11 @@ def upload_to_drive():
                 'location': {
                     'index': 1,
                 },
-                'text': 'Heading 3-5 words max no stop writing too long...'
+                'text': 'Title added from flask app '
             }
         }
     ]
 
     result = service.documents().batchUpdate(documentId=DOCUMENT_ID, body={'requests': requests}).execute()
-    return "UPLOADED"
+    print('String appended to {0}'.format(doc.get('title')))
+    return "Done"
