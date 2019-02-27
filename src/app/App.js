@@ -53,10 +53,12 @@ class App extends Component {
     const { strips } = this.state;
     const newStrips = strips.map(strip => {
       if (strip.id === id) {
+        const newStrip = stripExamples.find(strip => strip.type === type);
         return {
           ...strip,
           type,
-          name: stripExamples.find(strip => strip.type === type).name
+          name: newStrip.name,
+          description: newStrip.description
         };
       }
       return strip;
@@ -69,9 +71,11 @@ class App extends Component {
     const { strips } = this.state;
     const newStrips = strips.map(strip => {
       if (strip.id === id) {
+        const newStrip = stripExamples.find(strip => strip.name === name);
         return {
           ...strip,
-          name
+          name,
+          description: newStrip.description
         };
       }
       return strip;
@@ -105,8 +109,13 @@ class App extends Component {
 
   generateMarkup = () => {
     const { container } = this;
-    if (container.current) {
-      this.setState({ markup: container.current.innerHTML });
+    const copy = { ...container };
+    if (copy.current) {
+      const markup = copy.current.innerHTML;
+      const strippedMarkup = markup
+        .replace('<section class="strip-container">', "")
+        .replace("</section>", "");
+      this.setState({ markup: strippedMarkup });
     }
   };
 

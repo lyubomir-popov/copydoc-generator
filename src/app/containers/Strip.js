@@ -42,16 +42,13 @@ class Strip extends Component {
   render = () => {
     const { border } = this.state;
     const { strip, move, remove, canMoveUp, canMoveDown, editing } = this.props;
-    const stripNames = stripExamples.reduce((acc, example) => {
-      if (example.type === strip.type) {
-        acc.push(example.name);
-      }
-      return acc;
-    }, []);
+    const stripsOfType = stripExamples.filter(
+      example => example.type === strip.type
+    );
 
     return (
       <section className="strip-container">
-        <div className={`p-strip ${border ? "pseudo-border" : ""}`}>
+        <div className={`p-strip${border ? " pseudo-border" : ""}`}>
           {this.getStripJSX()}
         </div>
         {editing && (
@@ -66,13 +63,14 @@ class Strip extends Component {
             />
             <StripTypeSelect
               selected={strip.name}
-              options={stripNames.map(name => ({
-                name,
-                value: name
+              options={stripsOfType.map(strip => ({
+                name: strip.name,
+                value: strip.name
               }))}
               onChange={this.selectName}
             />
             <div>
+              <p>{strip.description}</p>
               <label className="p-checkbox">
                 <span className="p-checkbox__text">Border</span>
                 <input

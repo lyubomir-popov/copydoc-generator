@@ -47,21 +47,25 @@ const stripExamples = [
   {
     type: "hero",
     name: "Hero 1",
+    description: "This is hero 1",
     jsx: markup.Hero1
   },
   {
     type: "hero",
     name: "Hero 2",
+    description: "This is hero 2",
     jsx: markup.Hero2
   },
   {
     type: "key-features",
     name: "Key features 1",
+    description: "This is key features 1",
     jsx: markup.KeyFeatures1
   },
   {
     type: "key-features",
     name: "Key features 2",
+    description: "This is key features 2",
     jsx: markup.KeyFeatures2
   }
 ];
