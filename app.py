@@ -130,7 +130,7 @@ def make_matrix_children_title(text):
     ]
 
 def make_hero_title(text):
-    text += "\n\n"
+    text += "\n"
     global index
     text_length = len(text)
     prev_index = index
@@ -176,7 +176,7 @@ def make_hero_title(text):
     ]
 
 def make_hero_description(text):
-    text += "\n\n"
+    text = "\n" + text + "\n"
     global index
     text_length = len(text)
     prev_index = index
