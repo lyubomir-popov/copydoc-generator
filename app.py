@@ -21,7 +21,6 @@ SCOPES = ['https://www.googleapis.com/auth/documents',
           'https://www.googleapis.com/auth/drive.appdata',
           'https://www.googleapis.com/auth/drive']
 
-
 # The ID of the document to edit.
 DOCUMENT_ID = environ['DOCUMENT_ID']
 
@@ -33,8 +32,18 @@ def index():
 @app.route("/drive", methods=["POST"])
 @cross_origin()
 def append_text():
-    body = request.get_json()
+    data = request.get_json()
 
+    all_ops = get_ops(data)
+    service = get_service()
+    doc = service.documents().get(documentId=DOCUMENT_ID).execute()
+
+    result = service.documents().batchUpdate(documentId=DOCUMENT_ID, body={'requests': all_ops}).execute()
+    print('String appended to {0}'.format(doc.get('title')))
+    return "Done"
+
+
+def get_service():
     creds = None
     if path.exists('token.pickle'):
         with open('token.pickle', 'rb') as token:
@@ -53,31 +62,46 @@ def append_text():
 
     service = build('docs', 'v1', credentials=creds, cache_discovery=False)
 
+    return service
 
-    # create doc
+def get_ops(data):
+    all_ops = []
 
-    # title = 'My Document'
-    # body = {
-    #     'title': title
-    # }
-    # doc = service.documents().create(body=body).execute()
-    doc = service.documents().get(documentId=DOCUMENT_ID).execute()
-    # add text
-    # print(body.get('heading'))
-    heading = body.get('heading')
-    heading_length = len(heading)
-    date = datetime.datetime.now().strftime("%y/%m/%d")
-    # add text
-    requests = [
+    for item in data:
+        item_type = item['type']
+        ops = None
+        if item_type == 'hero':
+            ops = handle_hero(item)
+        elif item_type == 'matrix':
+            ops = handle_matrix(item)
+
+        if not ops is None:
+            all_ops.extend(ops)
+
+    return all_ops
+
+
+def handle_hero(item):
+    title = item['title']
+    description = item['description']
+    return [make_text_op(title), make_text_op(description)]
+
+def handle_matrix(item):
+    name = item['name']
+    print(name)
+
+
+def make_text_op(text):
+    heading_length = len(text)
+    return [
         {
             'insertText': {
                 'location': {
                     'index': 1,
                 },
-                'text': heading
+                'text': text
             }
-        },
-        {
+        }, {
             'updateParagraphStyle': {
                 'range': {
                     'startIndex': 1,
@@ -103,7 +127,3 @@ def append_text():
             }
         }
     ]
-
-    result = service.documents().batchUpdate(documentId=DOCUMENT_ID, body={'requests': requests}).execute()
-    print('String appended to {0}'.format(doc.get('title')))
-    return "Done"
