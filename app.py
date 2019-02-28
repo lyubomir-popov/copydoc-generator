@@ -69,30 +69,40 @@ def append_text():
     date = datetime.datetime.now().strftime("%y/%m/%d")
     # add text
     requests = [
-         {
+        {
             'insertText': {
                 'location': {
                     'index': 1,
                 },
-                'text': '/n'
+                'text': heading
             }
-         },         {
-            'insertText': {
-                'location': {
-                    'index': 2,
+        },
+        {
+            'updateParagraphStyle': {
+                'range': {
+                    'startIndex': 1,
+                    'endIndex': heading_length
                 },
-                'text': 'Title added from flask app '
+                'paragraphStyle': {
+                    'namedStyleType': 'TITLE'
+                },
+                'fields': 'namedStyleType'
             }
-         }, {
-            'insertText': {
-                'location': {
-                    'index': heading_length,
+        }, {
+            'updateTextStyle': {
+                'range': {
+                    'startIndex': 1,
+                    'endIndex': heading_length
                 },
-                'text': ' this gets added after the first'
+                'textStyle': {
+                    'weightedFontFamily': {
+                        'fontFamily': 'Ubuntu'
+                    }
+                },
+                'fields': 'weightedFontFamily'
             }
         }
     ]
-
 
     result = service.documents().batchUpdate(documentId=DOCUMENT_ID, body={'requests': requests}).execute()
     print('String appended to {0}'.format(doc.get('title')))
