@@ -1,7 +1,13 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-const GlobalNav = ({ editing, toggleEditing, generateMarkup }) => (
+const GlobalNav = ({
+  editing,
+  toggleEditing,
+  generateMarkup,
+  createCopydoc,
+  loading
+}) => (
   <header className="global-nav">
     <div className="global-nav__row">
       <div className="global-nav__logo">Madagascar</div>
@@ -16,9 +22,21 @@ const GlobalNav = ({ editing, toggleEditing, generateMarkup }) => (
         <button
           type="button"
           onClick={() => generateMarkup()}
-          className="p-button--positive"
+          className="p-button--link u-no-margin--bottom"
         >
-          Export
+          Generate markup
+        </button>
+        <button
+          type="button"
+          onClick={() => createCopydoc()}
+          className="p-button--positive"
+          style={{ width: "144px" }}
+        >
+          {loading ? (
+            <i className="p-icon--spinner is-light u-animation--spin" />
+          ) : (
+            "Create"
+          )}
         </button>
       </div>
     </div>
@@ -26,6 +44,8 @@ const GlobalNav = ({ editing, toggleEditing, generateMarkup }) => (
 );
 
 GlobalNav.propTypes = {
+  createCopydoc: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
   editing: PropTypes.bool.isRequired,
   generateMarkup: PropTypes.func.isRequired,
   toggleEditing: PropTypes.func.isRequired

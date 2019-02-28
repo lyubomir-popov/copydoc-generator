@@ -20,10 +20,37 @@ class App extends Component {
   state = {
     strips: [],
     editing: true,
+    loading: false,
     markup: ""
   };
 
   container = React.createRef();
+
+  createCopydoc = () => {
+    const { strips } = this.state;
+
+    if (strips.length) {
+      this.setState({ loading: true });
+      fetch("http://localhost:8070/drive", {
+        method: "post",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          heading: strips[0].name
+        })
+      }).then(
+        response => {
+          this.setState({ loading: false });
+          console.log(response);
+        },
+        error => {
+          this.setState({ loading: false });
+          console.error(`Error: ${error}`);
+        }
+      );
+    }
+  };
 
   addStrip = strip => {
     const { strips } = this.state;
@@ -120,7 +147,7 @@ class App extends Component {
   };
 
   render = () => {
-    const { editing, markup } = this.state;
+    const { loading, editing, markup } = this.state;
 
     return (
       <div className="App">
@@ -128,6 +155,8 @@ class App extends Component {
           editing={editing}
           toggleEditing={this.toggleEditing}
           generateMarkup={this.generateMarkup}
+          createCopydoc={this.createCopydoc}
+          loading={loading}
         />
         <div>
           <Nav />

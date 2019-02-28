@@ -5,6 +5,7 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from flask import Flask, render_template, request
+from flask_cors import CORS, cross_origin
 import datetime
 
 app = Flask(
@@ -12,6 +13,9 @@ app = Flask(
     template_folder="build",
     static_folder="build/static",
 )
+
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 SCOPES = ['https://www.googleapis.com/auth/documents',
           'https://www.googleapis.com/auth/drive.appdata',
@@ -27,6 +31,7 @@ def index():
 
 # @app.route("/drive", methods=["POST"])
 @app.route("/drive", methods=["POST"])
+@cross_origin()
 def append_text():
     body = request.get_json()
 
