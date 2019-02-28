@@ -65,25 +65,34 @@ def append_text():
     # add text
     # print(body.get('heading'))
     heading = body.get('heading')
+    heading_length = len(heading)
     date = datetime.datetime.now().strftime("%y/%m/%d")
+    # add text
     requests = [
-            {
-                'replaceAllText': {
-                    'containsText': {
-                        'text': '{{title}}',
-                        'matchCase':  'true'
-                    },
-                    'replaceText': heading,
-                }}, {
-                'replaceAllText': {
-                    'containsText': {
-                        'text': '{{date}}',
-                        'matchCase':  'true'
-                    },
-                    'replaceText': str(date),
-                }
+         {
+            'insertText': {
+                'location': {
+                    'index': 1,
+                },
+                'text': '/n'
             }
-        ]
+         },         {
+            'insertText': {
+                'location': {
+                    'index': 2,
+                },
+                'text': 'Title added from flask app '
+            }
+         }, {
+            'insertText': {
+                'location': {
+                    'index': heading_length,
+                },
+                'text': ' this gets added after the first'
+            }
+        }
+    ]
+
 
     result = service.documents().batchUpdate(documentId=DOCUMENT_ID, body={'requests': requests}).execute()
     print('String appended to {0}'.format(doc.get('title')))
