@@ -32,13 +32,13 @@ def index():
 @app.route("/drive", methods=["POST"])
 @cross_origin()
 def append_text():
-    data = request.get_json()
+    patterns = request.get_json()
 
-    all_ops = get_ops(data)
+    all_doc_requests = get_doc_requests(patterns)
     service = get_service()
     doc = service.documents().get(documentId=DOCUMENT_ID).execute()
 
-    result = service.documents().batchUpdate(documentId=DOCUMENT_ID, body={'requests': all_ops}).execute()
+    result = service.documents().batchUpdate(documentId=DOCUMENT_ID, body={'requests': all_doc_requests}).execute()
     print('String appended to {0}'.format(doc.get('title')))
     return "Done"
 
@@ -64,35 +64,38 @@ def get_service():
 
     return service
 
-def get_ops(data):
-    all_ops = []
+index = 0
 
-    for item in data:
-        item_type = item['type']
-        ops = None
-        if item_type == 'hero':
-            ops = handle_hero(item)
-        elif item_type == 'matrix':
-            ops = handle_matrix(item)
+def get_doc_requests(patterns):
+    all_doc_requests = []
 
-        if not ops is None:
-            all_ops.extend(ops)
+    for pattern in patterns:
+        pattern_type = pattern['type']
+        doc_requests = None
 
-    return all_ops
+        if pattern_type == 'hero':
+            doc_requests = handle_hero(pattern)
+        elif pattern_type == 'matrix':
+            doc_requests = handle_matrix(pattern)
+
+        if not doc_requests is None:
+            all_doc_requests.extend(doc_requests)
+
+    return all_doc_requests
+
+def handle_hero(pattern):
+    title = pattern['title']
+    description = pattern['description']
+    return [make_text(title), make_text(description)]
+
+def handle_matrix(pattern):
+    title = pattern['matrix_items'][0]['title']
+    # print('Matrix item1 title dump: {0}'.format(pattern['matrix_items'][0]['title']))
+    return [make_matrix_children_title(title)]
 
 
-def handle_hero(item):
-    title = item['title']
-    description = item['description']
-    return [make_text_op(title), make_text_op(description)]
-
-def handle_matrix(item):
-    name = item['name']
-    print(name)
-
-
-def make_text_op(text):
-    heading_length = len(text)
+def make_matrix_children_title(text):
+    text_length = len(text)
     return [
         {
             'insertText': {
@@ -105,7 +108,7 @@ def make_text_op(text):
             'updateParagraphStyle': {
                 'range': {
                     'startIndex': 1,
-                    'endIndex': heading_length
+                    'endIndex': text_length
                 },
                 'paragraphStyle': {
                     'namedStyleType': 'TITLE'
@@ -116,7 +119,44 @@ def make_text_op(text):
             'updateTextStyle': {
                 'range': {
                     'startIndex': 1,
-                    'endIndex': heading_length
+                    'endIndex': text_length
+                },
+                'textStyle': {
+                    'weightedFontFamily': {
+                        'fontFamily': 'Ubuntu'
+                    }
+                },
+                'fields': 'weightedFontFamily'
+            }
+        }
+    ]
+
+def make_text(text):
+    text_length = len(text)
+    return [
+        {
+            'insertText': {
+                'location': {
+                    'index': 1,
+                },
+                'text': text
+            }
+        }, {
+            'updateParagraphStyle': {
+                'range': {
+                    'startIndex': 1,
+                    'endIndex': text_length
+                },
+                'paragraphStyle': {
+                    'namedStyleType': 'TITLE'
+                },
+                'fields': 'namedStyleType'
+            }
+        }, {
+            'updateTextStyle': {
+                'range': {
+                    'startIndex': 1,
+                    'endIndex': text_length
                 },
                 'textStyle': {
                     'weightedFontFamily': {
