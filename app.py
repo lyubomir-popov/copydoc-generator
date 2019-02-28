@@ -1,6 +1,6 @@
 from __future__ import print_function
 import pickle
-import os.path
+from os import environ, path
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
@@ -18,8 +18,8 @@ SCOPES = ['https://www.googleapis.com/auth/documents',
           'https://www.googleapis.com/auth/drive']
 
 
-# The ID of a sample document.
-DOCUMENT_ID = '1FOrHyHTlRTC6MWIjdAIGvGGOfUNTJwEgWXbQ_QYT7hM'
+# The ID of the document to edit.
+DOCUMENT_ID = environ['DOCUMENT_ID']
 
 @app.route("/")
 def index():
@@ -31,7 +31,7 @@ def append_text():
     body = request.get_json()
 
     creds = None
-    if os.path.exists('token.pickle'):
+    if path.exists('token.pickle'):
         with open('token.pickle', 'rb') as token:
             creds = pickle.load(token)
     # If there are no (valid) credentials available, let the user log in.
