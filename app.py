@@ -64,7 +64,7 @@ def get_service():
 
     return service
 
-index = 0
+index = 1
 
 def get_doc_requests(patterns):
     all_doc_requests = []
@@ -75,8 +75,7 @@ def get_doc_requests(patterns):
 
         if pattern_type == 'hero':
             doc_requests = handle_hero(pattern)
-        elif pattern_type == 'matrix':
-            doc_requests = handle_matrix(pattern)
+        # elif pattern_type == 'matrix':
 
         if not doc_requests is None:
             all_doc_requests.extend(doc_requests)
@@ -86,13 +85,12 @@ def get_doc_requests(patterns):
 def handle_hero(pattern):
     title = pattern['title']
     description = pattern['description']
-    return [make_text(title), make_text(description)]
+    return [make_hero_title(title), make_hero_description(description)]
 
 def handle_matrix(pattern):
     title = pattern['matrix_items'][0]['title']
     # print('Matrix item1 title dump: {0}'.format(pattern['matrix_items'][0]['title']))
     return [make_matrix_children_title(title)]
-
 
 def make_matrix_children_title(text):
     text_length = len(text)
@@ -131,21 +129,30 @@ def make_matrix_children_title(text):
         }
     ]
 
-def make_text(text):
+def make_hero_title(text):
+    text += "\n\n"
+    global index
     text_length = len(text)
+    prev_index = index
+    index += text_length
+
+    end_index = prev_index + text_length
+
+    print('end_index {0}'.format(end_index))
+
     return [
         {
             'insertText': {
                 'location': {
-                    'index': 1,
+                    'index': prev_index,
                 },
                 'text': text
             }
         }, {
             'updateParagraphStyle': {
                 'range': {
-                    'startIndex': 1,
-                    'endIndex': text_length
+                    'startIndex': prev_index,
+                    'endIndex': end_index
                 },
                 'paragraphStyle': {
                     'namedStyleType': 'TITLE'
@@ -155,8 +162,54 @@ def make_text(text):
         }, {
             'updateTextStyle': {
                 'range': {
-                    'startIndex': 1,
-                    'endIndex': text_length
+                    'startIndex': prev_index,
+                    'endIndex': end_index
+                },
+                'textStyle': {
+                    'weightedFontFamily': {
+                        'fontFamily': 'Ubuntu'
+                    }
+                },
+                'fields': 'weightedFontFamily'
+            }
+        }
+    ]
+
+def make_hero_description(text):
+    text += "\n\n"
+    global index
+    text_length = len(text)
+    prev_index = index
+    index += text_length
+
+    end_index = prev_index + text_length
+
+    print('end_index {0}'.format(end_index))
+
+    return [
+        {
+            'insertText': {
+                'location': {
+                    'index': prev_index,
+                },
+                'text': text
+            }
+        }, {
+            'updateParagraphStyle': {
+                'range': {
+                    'startIndex': prev_index,
+                    'endIndex': end_index
+                },
+                'paragraphStyle': {
+                    'namedStyleType': 'NORMAL_TEXT'
+                },
+                'fields': 'namedStyleType'
+            }
+        }, {
+            'updateTextStyle': {
+                'range': {
+                    'startIndex': prev_index,
+                    'endIndex': end_index
                 },
                 'textStyle': {
                     'weightedFontFamily': {
